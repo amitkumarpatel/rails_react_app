@@ -1,0 +1,311 @@
+<%= stylesheet_link_tag "kanban" %>
+<h1 class="kanban-hd" style="float:left">Satori Kanban</h1>
+<div style="clear:both"></div>
+<div class="kanban-txt">Kanban allows you to create and manage boards, sections inside boards and tasks inside sections. Simply drag and drop  sections to re-order and move tasks from one section to another section.</div>
+<div id="notice_mssg" class="success_messages"></div>
+<div id="section_id_val" style="display:none;"></div>
+<div id="show_now" class="kanban" ng-app="Kanban" style="display:block;">
+	<div ng-controller="BoardsCtrl">
+        <a href="/satori_manuals/Kanban_Manual.pdf" class="kb-blue-btn" style="margin-left:5px;display:inline-block" target="_blank">Help</a>
+		<a href="javascript:void(0);" class="kb-blue-btn" ng-click="toggleBoardform()"><i></i>Add A Board</a>
+    	<span class="my-boards-ttl"  style="display:none;" >My Boards:</span>
+    	<!-- Tab starts -->
+	    <ul class="kb-tab">
+	      <li><a href="#" style="display:none;" class="bord-ttl"><i></i><span>{{data.selectedboard.name}}</span></a>
+				<div class="kb-adm">
+		        	<a href="#" class="kb-edit" ng-click="editBoard()">Edit</a>
+		        	<a href="#" class="kb-manage" ng-click="manage_admin()">Manage Admin</a>
+        		</div>
+	        <div class="kb-tab-list">
+	          <h3>Boards Created by me</h3>
+	          <ul>
+	            <li ng-repeat="c in data.boards" ng-init="boardid = $index" >
+						<a href="#" ng-click="showBoard(c.id)">{{c.name}}</a>
+	            </li>
+	          </ul>
+	          <div class="kb-tab-sep"></div>
+	          <h3>Boards shared with me</h3>
+	          <ul>
+          		<li style = "padding-left: 10px;" ng-show="data.sharedboards == undefined || data.sharedboards.length <= 0"> There are no Shared Boards</li>
+	            	<li ng-repeat="c in data.sharedboards" ng-init="sharedboardindex = $index" >
+						<a href="#" ng-click="showBoard(c.id)">{{c.name}}</a>
+	            	</li>
+	          </ul>
+	        </div>
+	      </li>
+	    </ul>
+	    <!-- Tab ends -->
+	    <!-- Section starts -->
+	    
+	    <div class="kb-edit-box" id="manage_admin" style="display:none;">	    		
+	    	<form  name="add_new_board" novalidate ng-submit="addShareBoard();" style="display:none;">
+		    	<span class="inpt-box">
+		    			<div class="add-task-field">
+		    				<span class="add-task-res">Add Admin</span>
+		    				<input type="radio" id="shared-email" ng-model="shareBoard.searchtype" class="add-task-radio" name="share_board_searchtype" value="email"/>
+		    				<label for="shared-email" class="add-task-label">By Email-ID</label>
+		    				<input type="radio" id="shared-name" ng-model="shareBoard.searchtype" class="add-task-radio"  name="share_board_searchtype"  value="name" />
+		    				<label for="shared-name" class="add-task-label">By Name</label>
+		    			</div>
+		    			<div class="add-task-field">
+		    				<div class="">
+		    					<div class="blue-tags" ng-repeat=" addedresource in shareBoard.addedresource"  ng-init="addedresourceindex = $index" id="li_ldapusermukeshbhati">
+		    						<span style="line-height:21px;" class="tag-name lft"> {{addedresource.emailId}}</span>
+		    						<a class="lft close" ng-click="remove_member(addedresourceindex);"></a>
+		    					</div>
+		    				</div>
+		    				<input type="text"  ng-class="(this.showcreatebutton) ? 'add-task-input kb-spinner' : 'add-task-input'"  ng-model="shareBoard.term" style="width:89%;float:left;" placeholder="Select Resources" onclick="this.focus();"/>										
+		    				<a href="javascript:void(0)" class="add-task-srch-btn" ng-click="getshareboardresources(sectionIndex)"></a>
+		    			</div>
+		    			<input type="hidden"  ng-model="shareBoard.addedresource" />
+		    			<div class="clear"></div>
+		    			<div id="div_sharedboarduser" style="display:none">
+		    		    	<div class="ldap_ulist">
+		    		      		<table id="grouptable" width="684" cellspacing="0" cellpadding="0" border="0" class="kb-add-user">
+		    						<tbody>
+		    							<tr class="heading">
+		    								<th width="50"></th>
+		    								<th width="287">Name</th>
+		    								<th width="247">Mail</th>
+		    								<th width="150">Alias</th>
+		    								<th width="150">Sap ID</th>
+		    				        	</tr>
+		    							<tr onmouseover="this.style.background='#ffff99'" onmouseout="this.style.background='#ffffff'" ng-repeat="resource in data.sharedresources">
+		    								<td width="10px" height="25">
+		    									<a href="javascript:void(0);" ng-click="add_resource(resource)">
+		    										<img src="/assets/hcl/icons/wk_add.png" border="0" align="absmiddle">
+		    									</a>
+		    								</td>
+		    								<td width="150px" height="25" class="content">{{resource.full_name}}</td>
+		    								<td width="150px" height="25" class="content">{{resource.emailId}}</td>
+		    								<td width="150px" height="25" class="content">{{resource.userid}}</td>
+		    								<td width="150px" height="25" class="content">{{resource.sapid}}</td>
+		    								<td width="150px" height="25" bgcolor="#f7f7f7" class="content"></td>						                   
+		    		              	</tr>
+		    			      		</tbody>
+		    		      		</table>
+		    			    </div>
+		    			</div>
+		    			<div class="clear"></div>
+		    	</span>		    	
+		    	<div class="clear"></div><br />		    	
+		    	<input type="submit" class="edt-sbmt" value="" style="cursor:pointer !important"/>
+	    		<a class="kb-sec-cancel" ng-click="manage_admin()" href="javascript:void(0);" style="cursor:pointer !important">Cancel</a><br />
+	    		<div class="clear"></div>
+	    	</form>
+	    </div>
+	    
+    	<div id="add_new_board" ng-hide="custom" style="display:none;">    			
+	    	<form  name="add_new_board" novalidate ng-submit="addNewBoard();">
+			<div class="kb-edit-box">	    		
+	    		<span class="inpt-box">
+	    			<input  ng-class="(this.showcreatebutton) ? 'edt-txt kb-spinner' : 'edt-txt'"  type="text" onclick="this.focus();" kb-focus ng-model="newBoard.name" name="new_board_name" placeholder="Enter new board name" onclick="this.focus();">
+	    			<br />
+	    			<span class="kb-error" ng-repeat = "board_error in data.newBoardErrors.name"> {{board_error}} </span>
+    			</span>
+    			<input ng-disabled="this.showcreatebutton" type="submit" class="edt-sbmt" value="" style="cursor:pointer !important"/>
+    			<a class="kb-sec-cancel" ng-click="toggleBoardform()" href="javascript:void(0);" style="cursor:pointer !important">Cancel</a>
+    			<div class="clear"></div>
+   			</div>
+	    	</form>
+    	</div>
+    	<div ng-show="custom"></div>
+    	<div ng-show="(data.boards.length == 0 || data.boards == undefined) && data.sharedboards.length == 0 " class="kb-no-board">
+    	  <div class="no-board-hd">Welcome to Kanban</div>
+    	    <div class="no-board">
+    	      <p>Kanban is a new technique for managing a software development process in a highly efficient way. The word kanban is Japanese. Roughly translated, it means “card you can see”. Manage your tasks smartly using boards & sections. </p>
+    	      <span>You have not created any board. Please click on below button to create a board.</span>
+    	    </div>
+    	  <a href="#" class="add-board-btn" ng-click="toggleBoardform()"><i></i>Add A Board</a>
+    	</div>
+		<div ng-show="data.boards.length > 0 || data.sharedboards.length > 0" class="kb-section-box" style="height: 473px;">
+			<!--<label>Name:</label>
+			<h1> {{board.title}}!</h1>-->
+			<div class="kb-section" kb-section-sort ng-controller="SectionsCtrl"> 
+				<div class="kb-section-col" ng-repeat="section in data.selectedboard.sections" ng-init="sectionIndex = $index" 
+				data-section="{{sectionIndex}}" sectionid = "{{section.id}}">
+					<h3  class="kb-handle">
+						{{section.section_name}}
+						<div class="kb-task-edit" style="display:block;">
+							<i class="kb-task-edit-btn" ng-click="showsectionEditlink(sectionIndex)" style="margin: 8px; "></i>
+							<ul id="sectionaction{{sectionIndex}}" style="position: absolute; margin: 17px 0 0 -65px;">
+								<li><a href="#" class="edit-task"  ng-click="editSection(sectionIndex)" >Edit</a></li>
+								<li><a href="#" class="archive-task" ng-click="archiveSection(sectionIndex)">Archive</a></li>
+							</ul>
+						</div>
+					</h3>					
+					<div class="kb-edit-handle">
+						<input class="kb-edit-handle-input" />
+						<input type="submit" value="Save" class="kb-save" style="cursor:pointer !important" />
+						<a class="kb-sec-cancel" href="javascript:void(0);" style="cursor:pointer !important">Cancel</a>
+						<div class="clear"></div>
+					</div>
+					<div class="kb-task-box" kb-task-box ng-controller="UsertasksCtrl">
+						<!-- task 1 starts -->
+						<div class="kb-task" ng-repeat="usertask in section.usertasks" ng-init="usertaskIndex = $index" data-task="{{usertask.id}}" taskid="{{usertask.id}}">
+							<div class="task" data-task={{usertask.id}}> </div>
+							<div class="kb-task-edit" style="display:block;">
+								<i class="kb-task-edit-btn" ng-click="showEditlink(usertask.id)"></i>
+								<ul id="edittask{{usertask.id}}">
+									<li><a href="#" class="edit-task" ng-click="editUserTask(sectionIndex,usertaskIndex)">Edit</a></li>
+									<li><a href="#" class="archive-task" ng-click="archiveUserTask(sectionIndex,usertaskIndex)">Archive</a></li>
+								</ul>
+							</div>
+							<span class="kb-task-icons">
+								<a href="#" class="kb-my-task" title="{{ taskresources[usertask.id].join(', ')}}"></a> 
+								<a href="#" class="kb-priority-{{usertask.priority}}" title = "{{usertask.priority}}"></a>
+									<!-- <a href="#" class="kb-priority-medium"></a> <a href="#" class="kb-priority-low"> -->
+								</a> 
+								<!--<a href="#" class="kb-attachment"></a> -->
+							</span>
+							<div class="kb-task-cont">
+								<h4 class="kb-task-ttl">{{usertask.title}}</h4>
+								<div class="kb-tags">
+									Tags: <a href="#" ng-repeat="tasktag in usertask.tags">{{tasktag.tag}} </a>
+								</div>
+								<div class="kb-description">{{usertask.description}}</div>
+								<div class="kb-date">{{usertask.start_date | date:'MMM d, yy'}}-{{usertask.end_date | date:'MMM d, yy'}}</div>
+								<div class="kb-hours" ng-repeat="rhours in section.hours">
+									<div ng-if="usertask.id == rhours.task_id">
+										<span >
+										 Total Hours Spent: {{rhours.hours/60}}
+		                </span>
+		              </div>
+		            </div>
+								
+							</div>
+							<div class="clear"></div>
+						</div>
+						<!-- Task From -->
+						<div id="newTaskForm{{sectionIndex}}" class="add-task-layer  sort-disabled" style="display:none;">
+							<div class="add-task-layer-box">
+								<form  id = "createTask" name="add_new_task" ng-submit="addNewTask(sectionIndex,usertaskIndex);">	
+									<h4 class="add-task-ttl">
+										<span>Add a Task</span> 
+										<span class="ttl-txt">in section</span> 
+										&nbsp;{{section.section_name}}
+									</h4>
+									<div class="add-task-field">
+										
+										<input type="text" class="add-task-input" kb-focus ng-model="newTask.title" name="new_task_title"  style="width:96%;" placeholder="Give a title to this task" onclick="this.focus();"/>			
+										<span class="kb-error" ng-repeat = "task_error in data.TaskErrors.title"> {{task_error}} </span>					
+									</div>
+									<div class="add-task-field">										
+										<textarea kb-focus ng-model="newTask.description" name="new_task_description"  class="add-task-textarea" style="width:96%;" placeholder="Write few words about this task"  onclick="this.focus();"></textarea>
+										<span class="kb-error" ng-repeat = "task_error in data.TaskErrors.description"> {{task_error}} </span>
+									</div>
+									
+									<div class="add-task-field" style="float:left; width:46%;">										
+										<input type="text" ng-model="newTask.tag" name="new_task_tag" class="add-task-input" style="width:96%;" placeholder="Add Tags"  onclick="this.focus();"/>
+										<span class="kb-error" ng-repeat = "task_error in data.TaskErrors.tags"> {{task_error}} </span>
+									</div>
+									<div class="add-task-field" style="float:right; width:48%;clear:none;">
+										<select class="add-task-select" size="1" ng-model="newTask.priority" onclick= "this.focus();"> 
+											<option>High</option>
+											<option>Medium</option>
+											<option>Low</option>
+										</select>
+									</div>
+									<div class="add-task-field" style="float:left; width:22%;">										
+										<input id="frm_date{{sectionIndex}}" ng-model="newTask.start_date" name="new_task_start_date" type="text" class="add-task-input frm_date" style="width:60%;" placeholder="From Date"  onclick="this.focus();"/>
+										<span class="kb-error" ng-repeat = "task_error in data.TaskErrors.start_date"> {{task_error}} </span>
+									</div>
+									<div class="add-task-field" style="float:left; width:21%;clear:none;margin-left:30px;">										
+										<input id="to_date{{sectionIndex}}" ng-model="newTask.end_date" name="new_task_end_date" type="text" class="add-task-input to_date" style="width:60%;" placeholder="To Date"  onclick="this.focus();"/>
+										<span class="kb-error" ng-repeat = "task_error in data.TaskErrors.end_date"> {{task_error}} </span>
+									</div>
+									<!--<div class="add-task-field" style="float:right; width:48%;clear:none;">
+										<input type="file" class="add-task-input" style="width:92%;" placeholder="Add Tags"/>
+									</div>-->
+									
+									<div class="add-task-field">
+										<span class="add-task-res">Add Resources</span>
+										<input type="radio" id="res-email{{sectionIndex}}" ng-model="newTask.searchtype" class="add-task-radio" name="new_task_searchtype" value="email"/>
+										<label for="res-email{{sectionIndex}}" class="add-task-label">By Email-ID</label>
+										<input type="radio" id="res-name{{sectionIndex}}" ng-model="newTask.searchtype" class="add-task-radio"  name="new_task_searchtype"  value="name" />
+										<label for="res-name{{sectionIndex}}" class="add-task-label">By Name</label>
+									</div>
+									<div class="add-task-field">
+										<div class="">
+											<div class="blue-tags" ng-repeat=" addedresource in newTask.addedresource"  ng-init="addedresourceindex = $index" id="li_ldapusermukeshbhati">
+												<span style="line-height:21px;" class="tag-name lft"> {{addedresource}}</span>
+												<a class="lft close" ng-click="remove_member(addedresourceindex);"></a>
+											</div>
+										</div>
+										<input type="text"  ng-class="(this.showcreatebutton) ? 'add-task-input kb-spinner' : 'add-task-input'" ng-model="newTask.term" style="width:89%;float:left;" placeholder="Select Resources" onclick="this.focus();"/>										
+										<a href="javascript:void(0)"  class="add-task-srch-btn" ng-click="getresources(sectionIndex)"></a><br />
+										<span class="kb-error" ng-repeat = "task_error in data.TaskErrors.resources"> {{task_error}} </span>
+									</div>
+									<input type="hidden"  ng-model="newTask.addedresource" />
+									<div class="clear"></div>
+									<div id="div_ldapuser{{sectionIndex}}" style="display:none">
+								    	<div class="ldap_ulist">
+								      		<table id="grouptable" width="684" cellspacing="0" cellpadding="0" border="0" class="kb-add-user">
+												<tbody>
+													<tr class="heading">
+														<th width="50"></th>
+														<th width="287">Name</th>
+														<th width="247">Mail</th>
+														<th width="150">Alias</th>
+														<th width="150">Sap ID</th>
+										        	</tr>
+													<tr onmouseover="this.style.background='#ffff99'" onmouseout="this.style.background='#ffffff'" ng-repeat="resource in data.resources">
+														<td width="10px" height="25">
+															<a href="javascript:void(0);" ng-click="add_resource(resource.userid)">
+																<img src="/assets/hcl/icons/wk_add.png" border="0" align="absmiddle">
+															</a>
+														</td>
+														<td width="150px" height="25" class="content">{{resource.full_name}}</td>
+														<td width="150px" height="25" class="content">{{resource.emailId}}</td>
+														<td width="150px" height="25" class="content">{{resource.userid}}</td>
+														<td width="150px" height="25" class="content">{{resource.sapid}}</td>
+														<td width="150px" height="25" bgcolor="#f7f7f7" class="content">									                   
+								              	</tr>
+									      		</tbody>
+								      		</table>
+									    </div>
+									</div>
+									<div class="clear"></div>
+									<div ng-show="this.showcreatebutton" class="kb-spinner-task"> </div>
+									<div class="add-task-sbmt">
+										<input type="submit" class="add-task-sbmt-btn" value=""  style="cursor:pointer !important"/>&nbsp;
+										<a href="#" class="add-task-cancel" ng-click="task_form(sectionIndex)" style="cursor:pointer !important">Cancel</a> 
+									</div>
+								</form>
+							</div> 
+						</div>	
+						<!-- Task From  Ends -->
+					</div>		
+					<div class="kb-add-task add-task" data-section="{{section.section_name}}"  ng-click="task_form(sectionIndex)">
+						<i></i>
+						<span style="cursor:pointer !important">Add a task to this section...</span>
+					</div>
+					<div class="clear"></div>	
+				</div> 
+				<div id="section_form" class="kb-section-col" style="display:none;">	
+					<div class="kb-edit-handle" style="display:block;">							
+						<form  name="add_new_section" ng-submit="addNewSection(sectionIndex);">	
+							 <input ng-class="(this.showcreatebutton) ? 'kb-edit-handle-input kb-spinner' : 'kb-edit-handle-input'" kb-focus ng-model="newSection.section_name" name="new_section_section_name"  Placeholder="Give a name to this section" onclick="this.focus();">
+							<span class="kb-error" ng-repeat = "section_error in data.SectionErrors.section_name"> {{section_error}}	</span><br />
+							
+							<input type="submit" value="Save" class="kb-save" style="cursor:pointer !important">
+							&nbsp;&nbsp;<a class="kb-cancel" href="javascript:void(0);" ng-click="sectionform();" style="cursor:pointer !important">Cancel</a>							
+							<div class="clear"></div> 	
+						</form>
+					</div>
+					<div class="kb-task-box ui-sortable"></div><div class="clear"></div>
+				</div>
+				<a href="javascript:void(0);" class="kb-add-section" ng-click="sectionform()"></a>  
+				<div ng-show="data.selectedboard.sections.length == 0"  class="kb-section-box">
+					<div class="kb-no-section" style="width:auto;">
+						<div class="no-section">
+				  			You have created a board “<strong>{{data.selectedboard.name}}</strong>”. <br />
+							But you have not added any section to this board.</div>
+							<a href="#" class="kb-add-sec-btn" ng-click="sectionform();" style="cursor:pointer !important"><i></i>Add A Section</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div> 	
+	</div> 
+</div>
