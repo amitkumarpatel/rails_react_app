@@ -8,7 +8,6 @@
 /.bundle
 
 # Ignore database.
-/db/
 
 # Ignore all logfiles and tempfiles.
 /log/*.log
