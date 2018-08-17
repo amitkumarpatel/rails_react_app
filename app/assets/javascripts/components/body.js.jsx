@@ -39,7 +39,6 @@ class Body extends React.Component {
   }
 
   handleDelete(id){
-    //e.preventDefault();
     $.ajax({
       method: 'DELETE',
       url: '/boards/' + id,

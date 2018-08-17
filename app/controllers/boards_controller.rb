@@ -1,4 +1,5 @@
 class BoardsController < ApplicationController
+
 	def index
 		@boards = Board.where("").order('id ASC').paginate(page: 1, per_page: 10)
 		render json: @boards

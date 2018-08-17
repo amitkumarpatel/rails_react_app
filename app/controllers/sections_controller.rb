@@ -1,0 +1,18 @@
+class SectionsController < ApplicationController
+	def index
+		@sections = Section.includes(:board).where(board_id: params[:board_id]).order("id ASC").paginate(page: params[:page], per_page: 10)	
+		render json: @sections
+	end
+
+	def create
+		board = Board.find(params[:board_id])
+	  section = board.sections.new(params[:section])
+	  if section.save
+	    render json: section
+	  else
+	    render nothing: true, status: :bad_request
+	  end
+	end
+
+
+end
