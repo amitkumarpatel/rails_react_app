@@ -44,13 +44,14 @@ constructor(props){
  //    })
  //  }
 
-	handleEdit(){
+	handleEdit(id){
 		if(this.state.editable){
       let name = this.name.value
       let description = this.description.value
-      let id = this.props.board.id
-      let board = {id: id, name: name, description: description}
-      this.props.handleUpdate(board)
+      let position = this.position.value
+      let id = this.props.section.id
+      let section = {id: id, name: name, description: description, section_position: position}
+      this.props.handleUpdate(id, section)
     }
     this.setState({
       editable: !this.state.editable
@@ -70,13 +71,13 @@ constructor(props){
  //      }
  //    });  
  //  }
- //  updateBoardSection(board, section){
- //    let newSections = board.filter((f) => f.id !== board.id)
- //    newBoards.push(board)
- //    this.setState({
- //      boards: newBoards
- //    })
- //  }
+  // updateBoardSection(board, section){
+  //   let newSections = board.filter((f) => f.id !== board.id)
+  //   newBoards.push(board)
+  //   this.setState({
+  //     boards: newBoards
+  //   })
+  // }
   render(){
 
 		let name = this.state.editable ? <input type='text' ref={input => this.name = input} defaultValue={this.props.section.name}/>:<h3>{this.props.section.name}</h3>
