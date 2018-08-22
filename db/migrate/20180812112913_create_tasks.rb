@@ -9,7 +9,7 @@ class CreateTasks < ActiveRecord::Migration
       t.integer :status
       t.integer :position
       t.integer :user_id
-      t.integer :task_id
+      t.integer :section_id
 
       t.timestamps
     end

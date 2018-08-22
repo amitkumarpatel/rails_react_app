@@ -21,11 +21,11 @@ class SectionsController < ApplicationController
     else
       render nothing: true, status: :unprocessable_entity
     end
-  end
+	end
 
 	def destroy
-    @section = Section.find(params[:id])
-    @section.destroy
+    section = Section.find(params[:id])
+    section.destroy
     head :no_content
   end
 

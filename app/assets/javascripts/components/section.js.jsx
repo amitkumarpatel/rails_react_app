@@ -3,34 +3,38 @@ class Section extends React.Component{
 constructor(props){
     super(props);
     this.state = { tasks: [], editable: false }
-    this.handleEdit = this.handleEdit.bind(this)
     this.handleFormSubmit = this.handleFormSubmit.bind(this)
+    this.addNewTask = this.addNewTask.bind(this)
+    this.handleEdit = this.handleEdit.bind(this)
+    this.handleUpdate = this.handleUpdate.bind(this);
+    this.updateSectionTask = this.updateSectionTask.bind(this)
+    this.handleDelete = this.handleDelete.bind(this)
+    this.deleteSection = this.deleteSection.bind(this)
   }
 
-  // componentDidMount(){
-  //   console.log(this);
-  //   var self = this;
-  //   $.ajax({
-  //     url: '/board/' + board.id,
-  //     success: function(data) {
-  //       self.setState({ sections: data });
-  //     },
-  //     error: function(xhr, status, error) {
-  //       alert('Cannot get data from API: ', error);
-  //     }
-  //   });
-  // }
+  componentDidMount(){
+    var self = this;
+    $.ajax({
+      url: '/boards/' + this.props.section.board_id + '/sections/' + this.props.section.id + '/tasks',
+      success: function(data) {
+        self.setState({ tasks: data });
+      },
+      error: function(xhr, status, error) {
+        alert('Cannot get data from API: ', error);
+      }
+    });
+  }
 
-  handleFormSubmit(board, name, description, position){
-    let body = {name: name, description:   description, position: position} 
+  handleFormSubmit(section, name, description, position, start_date, end_date){
+    let body = {title: name, description: description, position: position, start_date: start_date, end_date: end_date} 
 
     var self = this;
     $.ajax({
-      url: '/board/'+ board.id + '/sections/new',
-      data: { section: body },
+      url: '/boards/'+ section.board_id + '/sections/'+ section.id + '/tasks',
+      data: { task: body },
       method: 'POST',
       success: function(data) {
-        self.addNewSection(board, data)
+        self.addNewTask(section, data)
       },
       error: function(xhr, status, error) {
         alert('Cannot create board at the moment. Please try later.: ', status, xhr, error);
@@ -38,13 +42,13 @@ constructor(props){
     });
   }
 
- //  addNewSection(board, section){
- //    this.setState({
- //      board: this.state.board.concat(section)
- //    })
- //  }
+  addNewTask(section, task){
+    this.setState({
+      tasks: this.state.tasks.concat(task)
+    })
+  }
 
-	handleEdit(id){
+	handleEdit(){
 		if(this.state.editable){
       let name = this.name.value
       let description = this.description.value
@@ -58,6 +62,47 @@ constructor(props){
     })
   }
 
+  handleUpdate(task){
+    $.ajax({
+      method: 'PUT',
+      url: '/boards/' + this.props.section.board_id + '/sections/' + task.section_id + '/tasks/' + task.id,
+      data: { task:  task },
+      success: function(data) {
+        this.updateSectionTask(task)
+      }.bind(this),
+      error: function(xhr, status, error) {
+        alert('Cannot update requested record: ', error);
+      }
+    });  
+  }
+
+  updateSectionTask(task){
+    let newTasks = this.state.tasks.filter((f) => f.id !== task.id)
+    newTasks.push(task)
+    this.setState({
+      tasks: newTasks
+    })
+  }
+
+  handleDelete(task){
+    $.ajax({
+      method: 'DELETE',
+      url: '/boards/' + this.props.section.board_id + '/sections/' + task.section_id + '/tasks/' + task.id,
+      success: function(data) {
+        this.deleteSection(task.id)
+      }.bind(this),
+      error: function(xhr, status, error) {
+        alert('Cannot delete requested record: ', error);
+      }
+    });
+  }
+
+  deleteSection(id){
+    newTasks = this.state.tasks.filter((task) => task.id !== id)
+    this.setState({
+      tasks: newTasks
+    })
+  }
  //  handleAddSection(id){
  //    $.ajax({
  //      method: 'POST',
@@ -83,16 +128,17 @@ constructor(props){
 		let name = this.state.editable ? <input type='text' ref={input => this.name = input} defaultValue={this.props.section.name}/>:<h3>{this.props.section.name}</h3>
     let description = this.state.editable ? <input type='text' ref={input => this.description = input} defaultValue={this.props.section.description}/>:<p>{this.props.section.description}</p>
     let position = this.state.editable ? <input type='text' ref={input => this.position = input} defaultValue={this.props.section.section_position}/>:<p>{this.props.section.section_position}</p>
+
     return(
       <div>
         {name}
         {description}
         {position}
-        <NewTask board={this.props.board} handleFormSubmit={this.handleFormSubmit} />
-        <AllTasks sections={this.state.sections} handleDelete={this.handleDelete}  handleUpdate = {this.handleUpdate} />
-        <button onClick={() => this.handleAddSection(this.props.board.id)}> Add Taks</button>
-        <button onClick={() => this.handleEdit()}> {this.state.editable? 'Submit' : 'Edit'}</button>
-        <button onClick={() => this.props.handleDelete(this.props.board.id)}>Delete</button>
+        <NewTask section={this.props.section} handleFormSubmit={this.handleFormSubmit} />
+        <AllTasks tasks={this.state.tasks} handleDelete={this.handleDelete}  handleUpdate = {this.handleUpdate} />
+        <button onClick={() => this.handleAddSection(this.props.board.id)}> Add Tasks</button>
+        <button onClick={() => this.handleEdit()}> {this.state.editable? 'Submit' : 'Edit Section'}</button>
+        <button onClick={() => this.props.handleDelete(this.props.section)}>Delete Section</button>
       </div>
     )      
   }

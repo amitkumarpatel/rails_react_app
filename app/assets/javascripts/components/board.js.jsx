@@ -10,7 +10,6 @@ constructor(props){
     this.handleDelete = this.handleDelete.bind(this)
     this.deleteSection = this.deleteSection.bind(this)
     this.handleUpdate = this.handleUpdate.bind(this);
-    //this.updateSection = this.updateSection.bind(this)
     this.updateBoardSection = this.updateBoardSection.bind(this)
   }  
 
@@ -108,12 +107,12 @@ constructor(props){
     })
   }
 
-  handleDelete(id){
+  handleDelete(section){
     $.ajax({
       method: 'DELETE',
-      url: '/boards/' + id,
+      url: '/boards/' + section.board_id + '/sections/' + section.id,
       success: function(data) {
-        this.deleteBoard(id)
+        this.deleteSection(section.id)
       }.bind(this),
       error: function(xhr, status, error) {
         alert('Cannot delete requested record: ', error);
@@ -122,14 +121,13 @@ constructor(props){
   }
 
   deleteSection(id){
-    newBoards = this.state.boards.filter((board) => board.id !== id)
+    newSections = this.state.sections.filter((section) => section.id !== id)
     this.setState({
-      boards: newBoards
+      sections: newSections
     })
   }
 
   render(){
-
 		let name = this.state.editable ? <input type='text' ref={input => this.name = input} defaultValue={this.props.board.name}/>:<h3>{this.props.board.name}</h3>
     let description = this.state.editable ? <input type='text' ref={input => this.description = input} defaultValue={this.props.board.description}/>:<p>{this.props.board.description}</p>
     return(
@@ -139,8 +137,8 @@ constructor(props){
         <NewSection board={this.props.board} handleFormSubmit={this.handleFormSubmit} />
         <AllSections sections={this.state.sections} handleDelete={this.handleDelete}  handleUpdate = {this.handleUpdate} />
         <button onClick={() => this.handleAddSection(this.props.board.id)}> Add Section</button>
-        <button onClick={() => this.handleEdit(this.props.board.id)}> {this.state.editable? 'Submit' : 'Edit'}</button>
-        <button onClick={() => this.props.handleDelete(this.props.board.id)}>Delete</button>
+        <button onClick={() => this.handleEdit(this.props.board.id)}> {this.state.editable? 'Submit' : 'Edit Board'}</button>
+        <button onClick={() => this.props.handleDelete(this.props.board.id)}>Delete Board</button>
       </div>
     )      
   }

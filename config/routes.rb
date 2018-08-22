@@ -3,6 +3,8 @@ ReactApp::Application.routes.draw do
 
   resources :boards do 
     resources :sections do
+      resources :tasks do
+      end
     end
   end
   
