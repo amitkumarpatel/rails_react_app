@@ -2,6 +2,7 @@ class Body extends React.Component {
   constructor(props) {
     super(props);
     this.state = { boards: [] };
+    this.showNewForm = this.showNewForm.bind(this)
     this.handleFormSubmit = this.handleFormSubmit.bind(this)
     this.addNewBoard = this.addNewBoard.bind(this)
     this.handleDelete = this.handleDelete.bind(this)
@@ -86,11 +87,39 @@ class Body extends React.Component {
     })
   }
 
+  showNewForm() {
+    $('.new-board-form').toggleClass("display-none");
+  }
+
   render(){
+    var board_names = this.state.boards.map((board) => {
+      return(
+        <a href="javascript:void(0)" key={board.id}  className="list-group-item">
+          {board.name}
+        </a> 
+      )
+    })
+
     return(
-      <div>
-        <NewBoard handleFormSubmit={this.handleFormSubmit} />
-        <AllBoards boards={this.state.boards} handleDelete={this.handleDelete}  handleUpdate = {this.handleUpdate} />
+
+      <div className="row">
+        <div className="col-lg-3">
+          <h1 className="my-4">Board Names</h1>
+          <div className="list-group">
+            {board_names}
+          </div>
+          <div>
+            <a href="javascript:void(0)" className="list-group-item" onClick={this.showNewForm}>New Board</a>
+          </div>
+        </div>
+        <div className="col-lg-9">
+          <div className='display-none new-board-form'>
+            <NewBoard handleFormSubmit={this.handleFormSubmit} />
+          </div>
+          <div className="my-4">
+            <AllBoards boards={this.state.boards} handleDelete={this.handleDelete}  handleUpdate = {this.handleUpdate} />
+          </div>
+        </div>
       </div>
     )
   }

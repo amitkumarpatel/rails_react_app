@@ -127,14 +127,23 @@ constructor(props){
     })
   }
 
+  showSectionForm(){
+    $('.new-section-form').toggleClass("display-none");
+  }
+
   render(){
 		let name = this.state.editable ? <input type='text' ref={input => this.name = input} defaultValue={this.props.board.name}/>:<h3>{this.props.board.name}</h3>
     let description = this.state.editable ? <input type='text' ref={input => this.description = input} defaultValue={this.props.board.description}/>:<p>{this.props.board.description}</p>
     return(
       <div>
-        {name}
-        {description}
-        <NewSection board={this.props.board} handleFormSubmit={this.handleFormSubmit} />
+        <div>
+          <a className="pull-right"> <img src="/assets/add-plus-new-outline-stroke_763486.png" alt="" onClick={this.showSectionForm} /> </a>
+          {name}
+          {description}
+        </div>
+        <div className='display-none new-section-form'>
+          <NewSection board={this.props.board} handleFormSubmit={this.handleFormSubmit} />
+        </div>
         <AllSections sections={this.state.sections} handleDelete={this.handleDelete}  handleUpdate = {this.handleUpdate} />
         <button onClick={() => this.handleAddSection(this.props.board.id)}> Add Section</button>
         <button onClick={() => this.handleEdit(this.props.board.id)}> {this.state.editable? 'Submit' : 'Edit Board'}</button>

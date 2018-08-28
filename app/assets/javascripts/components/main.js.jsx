@@ -1,8 +1,10 @@
 const Main = (props) => {
   return(
-    <div>
-      <h1>Fruits are great!</h1>
-      <Body />
-    </div>
+    <div className="container">
+	    <div className='my-4'>
+	      <h1>Sign Board!</h1>
+	    </div>
+	    <Body />
+	  </div>
   )
 }

@@ -130,15 +130,24 @@ constructor(props){
     let position = this.state.editable ? <input type='text' ref={input => this.position = input} defaultValue={this.props.section.section_position}/>:<p>{this.props.section.section_position}</p>
 
     return(
-      <div>
-        {name}
-        {description}
-        {position}
-        <NewTask section={this.props.section} handleFormSubmit={this.handleFormSubmit} />
-        <AllTasks tasks={this.state.tasks} handleDelete={this.handleDelete}  handleUpdate = {this.handleUpdate} />
-        <button onClick={() => this.handleAddSection(this.props.board.id)}> Add Tasks</button>
-        <button onClick={() => this.handleEdit()}> {this.state.editable? 'Submit' : 'Edit Section'}</button>
-        <button onClick={() => this.props.handleDelete(this.props.section)}>Delete Section</button>
+      <div className="card h-100">
+        
+        <div className="card-body">
+          <h4 className="card-title">
+            <a href="#">{name}</a>
+          </h4>
+          <h5>{position}</h5>
+          <p className="card-text">{description}</p>
+        </div>
+        <div className="card-footer">
+          <div className='display-none'>
+            <NewTask section={this.props.section} handleFormSubmit={this.handleFormSubmit} />
+          </div>
+          <AllTasks tasks={this.state.tasks} handleDelete={this.handleDelete}  handleUpdate = {this.handleUpdate} />
+          <button onClick={() => this.handleAddSection(this.props.board.id)}> Add Tasks</button>
+          <button onClick={() => this.handleEdit()}> {this.state.editable? 'Submit' : 'Edit Section'}</button>
+          <button onClick={() => this.props.handleDelete(this.props.section)}>Delete Section</button>
+        </div>
       </div>
     )      
   }

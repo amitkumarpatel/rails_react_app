@@ -1,14 +1,14 @@
 const AllSections = (props) => {
 	var sections = props.sections.map((section) => {
     return(
-      <div key={section.id}>
+      <div className="col-lg-4 col-md-6 mb-4"  key={section.id}>
        <Section section={section}  handleDelete={props.handleDelete} handleUpdate={props.handleUpdate}/>
       </div>
     )
   })
 
 	return(
-    <div>
+    <div className='row'>
       {sections}
     </div>
   )
