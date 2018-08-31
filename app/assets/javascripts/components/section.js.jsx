@@ -123,6 +123,7 @@ constructor(props){
   //     boards: newBoards
   //   })
   // }
+
   render(){
 
 		let name = this.state.editable ? <input type='text' ref={input => this.name = input} defaultValue={this.props.section.name}/>:<h3>{this.props.section.name}</h3>
@@ -133,6 +134,8 @@ constructor(props){
       <div className="card h-100">
         
         <div className="card-body">
+          <button className="pull-right" onClick={() => this.handleEdit()}> {this.state.editable? 'Submit' : 'Edit Section'}</button>
+          <button className="pull-right" onClick={() => this.props.handleDelete(this.props.section)}>Delete Section</button>
           <h4 className="card-title">
             <a href="#">{name}</a>
           </h4>
@@ -140,13 +143,10 @@ constructor(props){
           <div className="card-text">{description}</div>
         </div>
         <div className="card-footer">
-          <div className='display-none'>
+          <div className='display-none new-task-form'>
             <NewTask section={this.props.section} handleFormSubmit={this.handleFormSubmit} />
           </div>
           <AllTasks tasks={this.state.tasks} handleDelete={this.handleDelete}  handleUpdate = {this.handleUpdate} />
-          <button onClick={() => this.handleAddSection(this.props.board.id)}> Add Tasks</button>
-          <button onClick={() => this.handleEdit()}> {this.state.editable? 'Submit' : 'Edit Section'}</button>
-          <button onClick={() => this.props.handleDelete(this.props.section)}>Delete Section</button>
         </div>
       </div>
     )      
