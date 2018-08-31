@@ -1,7 +1,7 @@
 class Body extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { boards: [] };
+    this.state = { boards: [], board: false };
     this.showNewForm = this.showNewForm.bind(this)
     this.handleFormSubmit = this.handleFormSubmit.bind(this)
     this.addNewBoard = this.addNewBoard.bind(this)
@@ -9,13 +9,16 @@ class Body extends React.Component {
     this.deleteBoard = this.deleteBoard.bind(this)
     this.handleUpdate = this.handleUpdate.bind(this);
     this.updateBoard = this.updateBoard.bind(this)
+    this.listSections = this.listSections.bind(this)
   }
+  
   componentDidMount(){
     var self = this;
     $.ajax({
       url: '/boards',
       success: function(data) {
         self.setState({ boards: data });
+        self.setState({ board: data[0] });
       },
       error: function(xhr, status, error) {
         alert('Cannot get data from API: ', error);
@@ -91,15 +94,38 @@ class Body extends React.Component {
     $('.new-board-form').toggleClass("display-none");
   }
 
+  listSections(id){
+    var self = this;
+    $.ajax({
+      url: '/boards/' + id,
+      success: function(data) {
+        self.setState({ board: data });
+        console.log(self);
+      },
+      error: function(xhr, status, error) {
+        alert('Cannot get data from API: ', error);
+      }
+    });
+  }
+
+// renderSections(data) {
+//       currentBoard = data
+// console.log(this.state);
+// }
+
   render(){
-    var board_names = this.state.boards.map((board) => {
+    let board_names = this.state.boards.map((board) => {
       return(
-        <a href="javascript:void(0)" key={board.id}  className="list-group-item">
+        <a href="javascript:void(0)" key={board.id}  className="list-group-item" onClick={() => this.listSections(board.id)}>
           {board.name}
         </a> 
       )
     })
 
+     let currentBoard ;
+     if (this.state.board) {
+       currentBoard = <Board board={this.state.board}  handleDelete={this.handleDelete} handleUpdate={this.handleUpdate}/>
+     }
     return(
 
       <div className="row">
@@ -117,7 +143,10 @@ class Body extends React.Component {
             <NewBoard handleFormSubmit={this.handleFormSubmit} />
           </div>
           <div className="my-4">
-            <AllBoards boards={this.state.boards} handleDelete={this.handleDelete}  handleUpdate = {this.handleUpdate} />
+            {currentBoard}
+            {/*<AllBoards boards={this.state.boards} handleDelete={this.handleDelete}  handleUpdate = {this.handleUpdate} /> */}
+            <div>
+            </div>
           </div>
         </div>
       </div>

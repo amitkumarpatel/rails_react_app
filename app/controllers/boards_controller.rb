@@ -5,6 +5,11 @@ class BoardsController < ApplicationController
 		render json: @boards
 	end
 
+	def show
+		@board = Board.includes({sections: :tasks}).find(params[:id])#.order('id ASC').paginate(page: 1, per_page: 10)
+		render json: @board
+	end
+
 	def create
 	  board = Board.new(params[:board])
 	  if board.save

@@ -26,6 +26,10 @@ constructor(props){
     });
   }
 
+  componentWillReceiveProps(nextProps) {
+    this.setState({sortedDataList: nextProps.data});
+  }
+
   handleFormSubmit(board, name, description, position){
     let body = {name: name, description:   description, section_position: position} 
 

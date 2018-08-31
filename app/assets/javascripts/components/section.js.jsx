@@ -137,7 +137,7 @@ constructor(props){
             <a href="#">{name}</a>
           </h4>
           <h5>{position}</h5>
-          <p className="card-text">{description}</p>
+          <div className="card-text">{description}</div>
         </div>
         <div className="card-footer">
           <div className='display-none'>
