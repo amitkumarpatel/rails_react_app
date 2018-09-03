@@ -1,7 +1,7 @@
 class Body extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { boards: [], board: false };
+    this.state = { boards: [], board: false , refreshSectionsList: false};
     this.showNewForm = this.showNewForm.bind(this)
     this.handleFormSubmit = this.handleFormSubmit.bind(this)
     this.addNewBoard = this.addNewBoard.bind(this)
@@ -10,6 +10,7 @@ class Body extends React.Component {
     this.handleUpdate = this.handleUpdate.bind(this);
     this.updateBoard = this.updateBoard.bind(this)
     this.listSections = this.listSections.bind(this)
+    this.refreshSectionsList = this.refreshSectionsList.bind(this)
   }
   
   componentDidMount(){
@@ -95,6 +96,7 @@ class Body extends React.Component {
   }
 
   listSections(id){
+    this.refreshSectionsList();
     var self = this;
     $.ajax({
       url: '/boards/' + id,
@@ -108,6 +110,9 @@ class Body extends React.Component {
     });
   }
 
+  refreshSectionsList(){
+      this.setState({refreshSectionsList: !this.state.refreshSectionsList})
+  }
 // renderSections(data) {
 //       currentBoard = data
 // console.log(this.state);
@@ -124,7 +129,7 @@ class Body extends React.Component {
 
      let currentBoard ;
      if (this.state.board) {
-       currentBoard = <Board board={this.state.board}  handleDelete={this.handleDelete} handleUpdate={this.handleUpdate}/>
+       currentBoard = <Board board={this.state.board} refresh={this.state.refreshSectionsList} handleDelete={this.handleDelete} handleUpdate={this.handleUpdate}/>
      }
     return(
 

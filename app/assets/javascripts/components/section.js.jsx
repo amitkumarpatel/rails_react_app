@@ -2,7 +2,7 @@ class Section extends React.Component{
 
 constructor(props){
     super(props);
-    this.state = { tasks: [], editable: false }
+    this.state = { tasks: [], editable: false, isClicked : false }
     this.handleFormSubmit = this.handleFormSubmit.bind(this)
     this.addNewTask = this.addNewTask.bind(this)
     this.handleEdit = this.handleEdit.bind(this)
@@ -10,6 +10,7 @@ constructor(props){
     this.updateSectionTask = this.updateSectionTask.bind(this)
     this.handleDelete = this.handleDelete.bind(this)
     this.deleteSection = this.deleteSection.bind(this)
+    this.showTaskForm = this.showTaskForm.bind(this)
   }
 
   componentDidMount(){
@@ -124,11 +125,16 @@ constructor(props){
   //   })
   // }
 
+  showTaskForm(){
+    this.setState({isClicked : !this.state.isClicked});
+  }
   render(){
 
 		let name = this.state.editable ? <input type='text' ref={input => this.name = input} defaultValue={this.props.section.name}/>:<h3>{this.props.section.name}</h3>
     let description = this.state.editable ? <input type='text' ref={input => this.description = input} defaultValue={this.props.section.description}/>:<p>{this.props.section.description}</p>
     let position = this.state.editable ? <input type='text' ref={input => this.position = input} defaultValue={this.props.section.section_position}/>:<p>{this.props.section.section_position}</p>
+
+    let someElementClass = this.state.isClicked ? '' : 'display-none';
 
     return(
       <div className="card h-100">
@@ -143,7 +149,11 @@ constructor(props){
           <div className="card-text">{description}</div>
         </div>
         <div className="card-footer">
-          <div className='display-none new-task-form'>
+          <a className="pull-right" onClick={(event) => this.showTaskForm(event)}> 
+            <img src="/assets/add-plus-new-outline-stroke_763486.png" alt="" title="Add Tasks" />
+          </a>
+
+          <div className={someElementClass}>
             <NewTask section={this.props.section} handleFormSubmit={this.handleFormSubmit} />
           </div>
           <AllTasks tasks={this.state.tasks} handleDelete={this.handleDelete}  handleUpdate = {this.handleUpdate} />

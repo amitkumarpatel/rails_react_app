@@ -26,9 +26,24 @@ constructor(props){
     });
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.setState({sortedDataList: nextProps.data});
+  componentWillReceiveProps(props) {
+    const { refresh, id } = this.props;
+    if (props.refresh !== refresh) {
+      var self = this;
+      $.ajax({
+        url: '/boards/' + this.props.board.id + '/sections',
+        success: function(data) {
+          self.setState({ sections: data });
+        },
+        error: function(xhr, status, error) {
+          alert('Cannot get data from API: ', error);
+        }
+      });
+    }
   }
+  // componentWillReceiveProps(nextProps) {
+  //   this.setState({sortedDataList: nextProps.data});
+  // }
 
   handleFormSubmit(board, name, description, position){
     let body = {name: name, description:   description, section_position: position} 
@@ -141,7 +156,9 @@ constructor(props){
     return(
       <div>
         <div>
-          <a className="pull-right"> <img src="/assets/add-plus-new-outline-stroke_763486.png" alt="" onClick={this.showSectionForm} /> </a>
+          <a className="pull-right" onClick={() => this.props.handleDelete(this.props.board.id)}> <img src="/assets/recyclebin.png" alt="" title='Destroy Board'/> </a>
+          <a className="pull-right" onClick={() => this.handleEdit(this.props.board.id)}> {this.state.editable? <img src="/assets/save.png" alt="" title='Submit' /> : <img src="/assets/pencil-edit.png" alt="" title='Edit Board' />}</a>
+          <a className="pull-right" title='Add Section'> <img src="/assets/add-plus-new-outline-stroke_763486.png" alt="" onClick={this.showSectionForm} /> </a>
           {name}
           {description}
         </div>
@@ -149,9 +166,7 @@ constructor(props){
           <NewSection board={this.props.board} handleFormSubmit={this.handleFormSubmit} />
         </div>
         <AllSections sections={this.state.sections} handleDelete={this.handleDelete}  handleUpdate = {this.handleUpdate} />
-        <button onClick={() => this.handleAddSection(this.props.board.id)}> Add Section</button>
-        <button onClick={() => this.handleEdit(this.props.board.id)}> {this.state.editable? 'Submit' : 'Edit Board'}</button>
-        <button onClick={() => this.props.handleDelete(this.props.board.id)}>Delete Board</button>
+        {/*<button onClick={() => this.handleAddSection(this.props.board.id)}> Add Section</button> */}
       </div>
     )      
   }
