@@ -14,33 +14,45 @@
 //= require jquery_ujs
 //= require react
 //= require react_ujs
+//= require moment
+//= require react-datetime.min
 //= require components
 //= require_tree .
 
 
 $(document).ready(function(){
-    $(".kb-tab li a.bord-ttl" ).click(function() {
-        $('.kb-task-edit  ul').hide();
-        $('.add-task-layer').hide();
-        $(".kb-adm").show("fast");
-        $(".kb-tab-list").slideToggle("fast");
-        $(this).parent().toggleClass("act");
-    });
+  $(".kb-tab li a.bord-ttl" ).click(function() {
+      $('.kb-task-edit  ul').hide();
+      $('.add-task-layer').hide();
+      $(".kb-adm").show("fast");
+      $(".kb-tab-list").slideToggle("fast");
+      $(this).parent().toggleClass("act");
+  });
 
-    if ( $(".kb-tab-list").css('visibility') === 'hidden') {
-        $(".kb-tab li a.bord-ttl" ).hover(function() {
-            $(".kb-adm").show();
-        }, function(){$(".kb-adm").hide();});
-    }
+  if ( $(".kb-tab-list").css('visibility') === 'hidden') {
+      $(".kb-tab li a.bord-ttl" ).hover(function() {
+          $(".kb-adm").show();
+      }, function(){$(".kb-adm").hide();});
+  }
 
-    $(".kb-handle").click(function(){
-        $(this).hide();
-        $(this).next(".kb-edit-handle").show();
-    });
+  $(".kb-handle").click(function(){
+      $(this).hide();
+      $(this).next(".kb-edit-handle").show();
+  });
 
-    $( "#notice_mssg" ).fadeIn( "slow", function() {
-        // Animation complete
-    });
+  $( "#notice_mssg" ).fadeIn( "slow", function() {
+      // Animation complete
+  });
+
+  // $('.end-date').datepicker({
+  //     language: 'en',
+  //     minDate: new Date() // Now can select only dates, which goes after today
+  // })
+  // $('.start-date').datepicker({
+  //     language: 'en',
+  //     minDate: new Date() // Now can select only dates, which goes after today
+  // })
+
 });
 
 /*

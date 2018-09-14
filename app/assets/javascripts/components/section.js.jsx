@@ -104,6 +104,16 @@ constructor(props){
       tasks: newTasks
     })
   }
+
+  // setApptTime(e) {
+  //   var name = 'start_date';
+  //   var obj = {};
+  //   if(obj[name] = e.toDate()) {
+  //     this.props.onUserInput(obj);
+  //   }
+  // }
+
+
  //  handleAddSection(id){
  //    $.ajax({
  //      method: 'POST',
